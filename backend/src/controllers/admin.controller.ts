@@ -406,8 +406,7 @@ export class AdminController {
         totalDeliveries,
         successfulDeliveries,
         failedDeliveries,
-        pendingDeliveries,
-        queueStats
+        pendingDeliveries
       ] = await Promise.all([
         prisma.event.count(),
         prisma.subscription.count(),
@@ -415,8 +414,7 @@ export class AdminController {
         prisma.deliveryLog.count(),
         prisma.deliveryLog.count({ where: { status: 'success' } }),
         prisma.deliveryLog.count({ where: { status: 'failed' } }),
-        prisma.deliveryLog.count({ where: { status: 'pending' } }),
-        WebhookService.getQueueStats()
+        prisma.deliveryLog.count({ where: { status: 'pending' } })
       ]);
 
       const successRate = totalDeliveries > 0 ? (successfulDeliveries / totalDeliveries) * 100 : 0;
@@ -439,7 +437,10 @@ export class AdminController {
             pending: pendingDeliveries,
             successRate: Math.round(successRate * 100) / 100
           },
-          queue: queueStats
+          queue: {
+            pending: 0,
+            processing: 0
+          }
         }
       });
     } catch (error) {

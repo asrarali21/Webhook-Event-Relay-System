@@ -28,8 +28,8 @@ export class WebhookWorker {
       this.worker = new Worker('webhook-delivery', this.processJob, {
         connection: this.redisClient,
         concurrency: parseInt(process.env.WEBHOOK_CONCURRENCY || '5'),
-        removeOnComplete: 100,
-        removeOnFail: 50,
+        removeOnComplete: { count: 100 },
+        removeOnFail: { count: 50 },
       });
 
       // Job event handlers
