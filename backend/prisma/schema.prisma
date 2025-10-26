@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id              String   @id @default(uuid())
+  idempotency_key String   @unique
+  event_type      String
+  payload         Json
+  received_at     DateTime @default(now())
+
+  delivery_logs DeliveryLog[]
+
+  @@index([event_type])
+  @@index([received_at])
+}
+
+model Subscription {
+  id          String   @id @default(uuid())
+  event_type  String   @db.Text
+  target_url  String   @db.Text
+  secret_key  String   @default(cuid()) // Using cuid for a random secret
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  delivery_logs DeliveryLog[]
+
+  @@index([event_type])
+  @@index([is_active])
+}
+
+model DeliveryLog {
+  id                   String   @id @default(uuid())
+  status               String   // 'pending', 'success', 'failed'
+  attempt_count        Int      @default(1)
+  attempted_at         DateTime @default(now())
+  response_status_code Int?
+  response_body        String?  @db.Text
+  error_message        String?  @db.Text
+
+  // Relations
+  event_id        String
+  event           Event      @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  subscription_id String
+  subscription    Subscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+
+  @@index([event_id])
+  @@index([subscription_id])
+  @@index([status])
+  @@index([attempted_at])
+}
