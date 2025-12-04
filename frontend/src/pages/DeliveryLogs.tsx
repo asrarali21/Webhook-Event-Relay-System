@@ -55,16 +55,6 @@ export default function DeliveryLogs() {
     fetchLogs();
   }, [pagination.pageIndex, pagination.pageSize, columnFilters]);
 
-  const handleRetry = async (logId: string) => {
-    try {
-      await apiService.retryDelivery(logId);
-      toast.success('Retry job queued successfully');
-      fetchLogs(); // Refresh the data
-    } catch (error) {
-      console.error('Error retrying delivery:', error);
-      toast.error('Failed to retry delivery');
-    }
-  };
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
