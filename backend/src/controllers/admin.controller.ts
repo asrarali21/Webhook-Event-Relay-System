@@ -4,31 +4,7 @@ import { prisma } from '../config/prisma';
 import { WebhookService } from '../services/webhook.service';
 import { SecurityUtils } from '../utils/security';
 
-export class AdminController {
-  // Get all webhook subscriptions
-  static async getSubscriptions(req: Request, res: Response): Promise<Response> {
-    try {
-      const { page = 1, limit = 10, eventType, isActive } = req.query;
-      const skip = (Number(page) - 1) * Number(limit);
 
-      const where: any = {};
-      if (eventType) where.event_type = eventType;
-      if (isActive !== undefined) where.is_active = isActive === 'true';
-
-      const [subscriptions, total] = await Promise.all([
-        prisma.subscription.findMany({
-          where,
-          skip,
-          take: Number(limit),
-          orderBy: { created_at: 'desc' },
-          include: {
-            _count: {
-              select: { delivery_logs: true }
-            }
-          }
-        }),
-        prisma.subscription.count({ where })
-      ]);
 
       return res.status(200).json({
         success: true,
