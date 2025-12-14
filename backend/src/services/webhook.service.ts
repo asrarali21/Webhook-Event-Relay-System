@@ -50,30 +50,6 @@ export class WebhookService {
     }
     return this.webhookQueue;
   }
-
-  // Queue webhook delivery job for all active subscriptions of an event type
-  static async queueWebhookDeliveries(eventId: string, eventType: string) {
-    try {
-      const queue = this.getQueue();
-      
-      // Add job to process all webhook deliveries for this event
-      await queue.add('process-webhook-deliveries', {
-        type: 'process-webhook-deliveries',
-        eventId,
-        eventType
-      }, {
-        attempts: 1, // This job itself doesn't retry, individual webhook deliveries do
-        removeOnComplete: 10,
-        removeOnFail: 5,
-      });
-      
-      console.log(`📤 Queued webhook deliveries for event ${eventId} (type: ${eventType})`);
-    } catch (error) {
-      console.error('Error queuing webhook deliveries:', error);
-      throw error;
-    }
-  }
-
   // Queue individual webhook delivery job
   static async queueWebhookDelivery(eventId: string, subscriptionId: string) {
     try {
