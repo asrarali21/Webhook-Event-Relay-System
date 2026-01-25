@@ -44,59 +44,10 @@ export class WebhookService {
   }
 
   // Get the webhook queue instance
-  static getQueue(): Queue {
-    if (!this.isInitialized || !this.webhookQueue) {
-      throw new Error('WebhookService not initialized. Call initialize() first.');
-    }
-    return this.webhookQueue;
-  }
-  // Queue individual webhook delivery job
-  static async queueWebhookDelivery(eventId: string, subscriptionId: string) {
-    try {
-      const queue = this.getQueue();
-      
-      await queue.add('deliver-webhook', {
-        type: 'deliver-webhook',
-        eventId,
-        subscriptionId
-      }, {
-        attempts: parseInt(process.env.MAX_RETRY_ATTEMPTS || '3'),
-        backoff: {
-          type: 'exponential',
-          delay: 2000,
-        },
-        removeOnComplete: 10,
-        removeOnFail: 5,
-      });
-      
-      console.log(`📤 Queued individual webhook delivery for event ${eventId}, subscription ${subscriptionId}`);
-    } catch (error) {
-      console.error('Error queuing webhook delivery:', error);
-      throw error;
-    }
-  }
+ 
 
   // Get queue statistics
-  static async getQueueStats() {
-    try {
-      const queue = this.getQueue();
-      const waiting = await queue.getWaiting();
-      const active = await queue.getActive();
-      const completed = await queue.getCompleted();
-      const failed = await queue.getFailed();
-
-      return {
-        waiting: waiting.length,
-        active: active.length,
-        completed: completed.length,
-        failed: failed.length
-      };
-    } catch (error) {
-      console.error('Error getting queue stats:', error);
-      throw error;
-    }
-  }
-
+ 
   // Graceful shutdown
   static async shutdown() {
     try {
