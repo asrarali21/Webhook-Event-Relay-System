@@ -43,24 +43,3 @@ export class WebhookService {
     }
   }
 
-  // Get the webhook queue instance
- 
-
-  // Get queue statistics
- 
-  // Graceful shutdown
-  static async shutdown() {
-    try {
-      if (this.webhookQueue) {
-        await this.webhookQueue.close();
-        console.log('✅ Webhook queue closed');
-      }
-      if (this.redisClient) {
-        await this.redisClient.quit();
-        console.log('✅ Redis connection closed');
-      }
-    } catch (error) {
-      console.error('Error during shutdown:', error);
-    }
-  }
-}
