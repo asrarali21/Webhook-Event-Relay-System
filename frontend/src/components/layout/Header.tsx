@@ -17,30 +17,6 @@ export default function Header() {
         </div>
       </div>
       
-      <div className="flex items-center space-x-4">
-        {/* Search Bar */}
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input 
-            placeholder="Search webhooks..." 
-            className="pl-10 w-64 bg-slate-50 border-slate-200 focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" className="relative hover:bg-slate-100">
-            <Bell className="h-5 w-5 text-slate-600" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-          </Button>
-          <Button variant="ghost" size="icon" className="hover:bg-slate-100">
-            <Settings className="h-5 w-5 text-slate-600" />
-          </Button>
-          <Button variant="ghost" size="icon" className="hover:bg-slate-100">
-            <User className="h-5 w-5 text-slate-600" />
-          </Button>
-        </div>
-      </div>
     </header>
   );
 }
