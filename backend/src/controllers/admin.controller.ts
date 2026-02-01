@@ -35,44 +35,7 @@ import { SecurityUtils } from '../utils/security';
   }
 
   // Create new webhook subscription
-  static async createSubscription(req: Request, res: Response): Promise<Response> {
-    try {
-      const { eventType, targetUrl, description } = req.body;
-
-      // Validate input
-      if (!eventType || !targetUrl) {
-        return res.status(400).json({
-          success: false,
-          error: 'eventType and targetUrl are required',
-          code: 'VALIDATION_ERROR'
-        });
-      }
-
-      if (!SecurityUtils.isValidWebhookUrl(targetUrl)) {
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid webhook URL format',
-          code: 'INVALID_URL'
-        });
-      }
-
-      // Check for duplicate subscription
-      const existingSubscription = await prisma.subscription.findFirst({
-        where: {
-          event_type: eventType,
-          target_url: targetUrl,
-          is_active: true
-        }
-      });
-
-      if (existingSubscription) {
-        return res.status(409).json({
-          success: false,
-          error: 'Active subscription already exists for this event type and URL',
-          code: 'DUPLICATE_SUBSCRIPTION'
-        });
-      }
-
+  
       // Generate secret key for HMAC signing
       const secretKey = SecurityUtils.generateSecretKey();
 
