@@ -180,62 +180,6 @@ import { SecurityUtils } from '../utils/security';
   }
 
   // Get delivery logs with filtering and pagination
-  static async getDeliveryLogs(req: Request, res: Response): Promise<Response> {
-    try {
-      const { 
-        page = 1, 
-        limit = 20, 
-        eventId, 
-        subscriptionId, 
-        status, 
-        eventType,
-        startDate,
-        endDate
-      } = req.query;
-
-      const skip = (Number(page) - 1) * Number(limit);
-
-      const where: any = {};
-      if (eventId) where.event_id = eventId;
-      if (subscriptionId) where.subscription_id = subscriptionId;
-      if (status) where.status = status;
-      if (eventType) {
-        where.event = {
-          event_type: eventType
-        };
-      }
-      if (startDate || endDate) {
-        where.attempted_at = {};
-        if (startDate) where.attempted_at.gte = new Date(startDate as string);
-        if (endDate) where.attempted_at.lte = new Date(endDate as string);
-      }
-
-      const [logs, total] = await Promise.all([
-        prisma.deliveryLog.findMany({
-          where,
-          skip,
-          take: Number(limit),
-          orderBy: { attempted_at: 'desc' },
-          include: {
-            event: {
-              select: {
-                id: true,
-                event_type: true,
-                received_at: true
-              }
-            },
-            subscription: {
-              select: {
-                id: true,
-                event_type: true,
-                target_url: true,
-                is_active: true
-              }
-            }
-          }
-        }),
-        prisma.deliveryLog.count({ where })
-      ]);
 
       return res.status(200).json({
         success: true,
