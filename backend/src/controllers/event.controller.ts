@@ -28,43 +28,6 @@ export class EventController {
         });
       }
 
-      // Validate request body
-      const validationResult = EventController.validateEventRequest(req.body);
-      if (!validationResult.isValid) {
-        return res.status(400).json({
-          success: false,
-          error: validationResult.error,
-          code: 'VALIDATION_ERROR'
-        });
-      }
-
-      const { eventType, payload } = req.body as EventRequest;
-
-      // Check for duplicate event using idempotency key
-      const existingEvent = await prisma.event.findUnique({
-        where: { idempotency_key: idempotencyKey }
-      });
-
-      if (existingEvent) {
-        console.log(`🔄 Duplicate event detected with idempotency key: ${idempotencyKey}`);
-        return res.status(202).json({
-          success: true,
-          message: 'Event already processed (idempotent)',
-          eventId: existingEvent.id,
-          idempotencyKey: existingEvent.idempotency_key,
-          processedAt: existingEvent.received_at
-        });
-      }
-
-      // Store event in database
-      const event = await prisma.event.create({
-        data: {
-          idempotency_key: idempotencyKey,
-          event_type: eventType,
-          payload: payload,
-          received_at: new Date()
-        }
-      });
 
       console.log(`✅ Event stored successfully: ${event.id} (type: ${eventType})`);
 
