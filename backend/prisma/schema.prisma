@@ -4,24 +4,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL") // Use direct (non-pooler) URL for migrations
-}
-
-model Event {
-  id              String   @id @default(uuid())
-  idempotency_key String   @unique
-  event_type      String
-  payload         Json
-  received_at     DateTime @default(now())
-
-  delivery_logs DeliveryLog[]
-
-  @@index([event_type])
-  @@index([received_at])
-}
+      
 
 model Subscription {
   id          String   @id @default(uuid())
@@ -32,21 +15,5 @@ model Subscription {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  delivery_logs DeliveryLog[]
 
-  @@index([event_type])
-  @@index([is_active])
-}
-
-
-  // Relations
-  event_id        String
-  event           Event      @relation(fields: [event_id], references: [id], onDelete: Cascade)
-  subscription_id String
-  subscription    Subscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
-
-  @@index([event_id])
-  @@index([subscription_id])
-  @@index([status])
-  @@index([attempted_at])
-}
+  
