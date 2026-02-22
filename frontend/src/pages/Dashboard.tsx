@@ -75,18 +75,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center space-y-4">
               <div className="relative">
-                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <RefreshCw className="h-6 w-6 text-blue-600 animate-pulse" />
-                </div>
-              </div>
-              <p className="text-slate-600 dark:text-slate-400 font-medium">Loading dashboard data...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
