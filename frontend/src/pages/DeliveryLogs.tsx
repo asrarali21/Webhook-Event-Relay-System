@@ -1,69 +1,6 @@
 
 
-  useEffect(() => {
-    fetchLogs();
-  }, [pagination.pageIndex, pagination.pageSize, columnFilters]);
-
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays}d ago`;
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Success</Badge>;
-      case 'failed':
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Failed</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pending</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
-  const columns: ColumnDef<DeliveryLog>[] = useMemo(
-    () => [
-      {
-        accessorKey: 'status',
-        header: 'Status',
-        cell: ({ row }) => getStatusBadge(row.getValue('status')),
-        filterFn: (row, _id, value) => {
-          return value.includes(row.getValue('status'));
         },
-      },
-      {
-        accessorKey: 'event.event_type',
-        header: 'Event Type',
-        cell: ({ row }) => {
-          const eventType = row.original.event.event_type;
-          return <span className="font-medium">{eventType}</span>;
-        },
-        filterFn: (row, _id, value) => {
-          return value.includes(row.original.event.event_type);
-        },
-      },
-      {
-        accessorKey: 'subscription.target_url',
-        header: 'Target URL',
-        cell: ({ row }) => {
-          const url = row.original.subscription.target_url;
-          return (
-            <div className="max-w-[300px] truncate" title={url}>
-              {url}
-            </div>
-          );
-        },
-      },
       {
         accessorKey: 'attemptedAt',
         header: 'Timestamp',
