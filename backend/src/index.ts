@@ -1,69 +1,3 @@
-// Main server entrypoint
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import dotenv from 'dotenv';
-import { WebhookService } from './services/webhook.service';
-import { WebhookWorker } from './workers/webhook.worker';
-import eventRoutes from './routes/event.routes';
-import adminRoutes from './routes/admin.routes';
-
-// Load environment variables
-dotenv.config();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-    },
-  },
-}));
-
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] // Replace with your frontend domain
-    : true, // Allow all origins in development
-  credentials: true
-}));
-
-app.use(express.json({ 
-  limit: '10mb',
-  verify: (req, res, buf) => {
-    // Store raw body for HMAC verification if needed
-    (req as any).rawBody = buf;
-  }
-}));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Request logging middleware
-app.use((req, res, next) => {
-  const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.path} - ${req.ip}`);
-  next();
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// API Routes
-app.use('/api/v1/events', eventRoutes);
-app.use('/api/v1/admin', adminRoutes);
-
-// 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -74,16 +8,7 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler
-app.use((error: any, req: any, res: any, next: any) => {
-  console.error('❌ Unhandled error:', error);
-  
-  res.status(500).json({
-    success: false,
-    error: 'Internal server error',
-    code: 'INTERNAL_ERROR',
-    ...(process.env.NODE_ENV === 'development' && { details: error.message })
-  });
-});
+
 
 // Initialize services and start server
 async function startServer() {
